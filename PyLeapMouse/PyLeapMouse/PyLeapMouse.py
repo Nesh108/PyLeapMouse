@@ -70,13 +70,54 @@ class LeapListener(Leap.Listener):
                     avg_pos += finger.tip_position
                 avg_pos /= len(fingers)
             
-            
+            print(avg_pos.x)
+            print(avg_pos.y)
             moveMouse(self, int(avg_pos.x*15), int(self.SCREEN_X - avg_pos.y*5))
+
+            # Left Click
+            if self.fingers_count == 1 and not self.Lclicked and avg_pos.z>=0:
+                clickMouse(self.cur_x, self.cur_y, 0)
+                releaseMouse(self.cur_x, self.cur_y, 0)
+                self.Lclicked = True
+                
+                if self.DEBUG:
+                    print("LClicked")
+            else:
+                if self.fingers_count != 1 or avg_pos.z <0:
+                    self.Lclicked = False
+                    slow(self)
+                    
+                    
+            # Left Click Hold
+            if self.fingers_count == 2 and not self.LHold and avg_pos.z>=0:
+                clickMouse(self.cur_x, self.cur_y, 0)
+                self.LHold = True
+                
+                if self.DEBUG:
+                    print("LHold")
+            else:
+                if self.fingers_count != 2 or avg_pos.z <0:
+                    if self.LHold:
+                        releaseMouse(self.cur_x, self.cur_y, 0)
+                    self.LHold = False
+                    slow(self)       
+                    
+            # Right Click Hold
+            if self.fingers_count == 3 and not self.Rclicked and avg_pos.z>=0:
+                clickMouse(self.cur_x, self.cur_y, 1)
+                self.Rclicked = True
+                
+                if self.DEBUG:
+                    print("RClicked")
+            else:
+                if self.fingers_count != 3 or avg_pos.z <0:
+                    if self.LHold:
+                        releaseMouse(self.cur_x, self.cur_y, 1)
+                    self.Rclicked = False
+                    slow(self)     
+                  
+
             
-            
-            
-            
-    
             
 def slow(self):
     sleep(self.SLOW)           
@@ -90,8 +131,7 @@ def moveMouse(self, x, y):
 # 0: Left
 # 1: Right
 # 2: Middle  -not implemented yet-        
-def clickMouse(value):
-    global cur_x, cur_y    
+def clickMouse(cur_x, cur_y, value):   
     
     if value == 0:
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,cur_x, cur_y,0,0)
@@ -105,9 +145,8 @@ def clickMouse(value):
 # 0: Left
 # 1: Right
 # 2: Middle  -not implemented yet-        
-def releaseMouse(value):
-    global cur_x, cur_y    
-    
+def releaseMouse(cur_x, cur_y, value):
+   
     if value == 0:
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,cur_x, cur_y,0,0)
     else:
@@ -123,7 +162,7 @@ def main():
     listener = LeapListener()
     controller = Leap.Controller()
 
-    if raw_input('Do you want to enable Debug Mode? Y/N (Default: Disabled)') == 'Y':
+    if raw_input('Do you want to enable Debug Mode? Y/N (Default: Disabled)').lower() == 'y':
         LeapListener.DEBUG = True
         print "Debug Mode Enabled."
     else:
