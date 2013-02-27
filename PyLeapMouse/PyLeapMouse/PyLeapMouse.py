@@ -69,13 +69,11 @@ class LeapListener(Leap.Listener):
                 for finger in fingers:
                     avg_pos += finger.tip_position
                 avg_pos /= len(fingers)
-            
-            print(avg_pos.x)
-            print(avg_pos.y)
+      
             moveMouse(self, int(avg_pos.x*15), int(self.SCREEN_X - avg_pos.y*5))
 
             # Left Click
-            if self.fingers_count == 1 and not self.Lclicked and avg_pos.z>=0:
+            if self.fingers_count == 1 and not self.Lclicked and avg_pos.z<=-70:
                 clickMouse(self.cur_x, self.cur_y, 0)
                 releaseMouse(self.cur_x, self.cur_y, 0)
                 self.Lclicked = True
@@ -83,41 +81,38 @@ class LeapListener(Leap.Listener):
                 if self.DEBUG:
                     print("LClicked")
             else:
-                if self.fingers_count != 1 or avg_pos.z <0:
+                if self.fingers_count != 1 or avg_pos.z >0:
                     self.Lclicked = False
                     slow(self)
                     
                     
             # Left Click Hold
-            if self.fingers_count == 2 and not self.LHold and avg_pos.z>=0:
+            if self.fingers_count == 2 and not self.LHold and avg_pos.z<=-70:
                 clickMouse(self.cur_x, self.cur_y, 0)
                 self.LHold = True
                 
                 if self.DEBUG:
                     print("LHold")
             else:
-                if self.fingers_count != 2 or avg_pos.z <0:
+                if self.fingers_count != 2 or avg_pos.z >0:
                     if self.LHold:
                         releaseMouse(self.cur_x, self.cur_y, 0)
                     self.LHold = False
                     slow(self)       
                     
-            # Right Click Hold
-            if self.fingers_count == 3 and not self.Rclicked and avg_pos.z>=0:
+            # Right Click
+            if self.fingers_count == 3 and not self.Rclicked and avg_pos.z<=-70:
                 clickMouse(self.cur_x, self.cur_y, 1)
+                releaseMouse(self.cur_x, self.cur_y, 1)
                 self.Rclicked = True
                 
                 if self.DEBUG:
                     print("RClicked")
             else:
-                if self.fingers_count != 3 or avg_pos.z <0:
-                    if self.LHold:
-                        releaseMouse(self.cur_x, self.cur_y, 1)
+                if self.fingers_count != 3 or avg_pos.z >0:
                     self.Rclicked = False
                     slow(self)     
-                  
-
-            
+             
             
 def slow(self):
     sleep(self.SLOW)           
