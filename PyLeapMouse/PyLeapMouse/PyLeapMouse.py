@@ -70,7 +70,7 @@ class LeapListener(Leap.Listener):
                     avg_pos += finger.tip_position
                 avg_pos /= len(fingers)
       
-            moveMouse(self, int(avg_pos.x*15), int(self.SCREEN_X - avg_pos.y*5))
+            moveMouse(self, int(avg_pos.x*15), int(self.SCREEN_Y - avg_pos.y*5))
 
             # Left Click
             if self.fingers_count == 1 and not self.Lclicked and avg_pos.z<=-70:
@@ -112,7 +112,22 @@ class LeapListener(Leap.Listener):
                 if self.fingers_count != 3 or avg_pos.z >0:
                     self.Rclicked = False
                     slow(self)     
-             
+                             
+            
+            
+            
+            # Place both hands on device
+           # if frame.hands.__len__ >1:
+             #   hand1 = frame.hands.get(0)
+             #   normal1 = hand1.palm_normal()
+              #  hand2 = frame.hands.get(1)
+             #   normal2 = hand2.palm_normal()
+                 
+                   
+                           
+                   
+
+            
             
 def slow(self):
     sleep(self.SLOW)           
